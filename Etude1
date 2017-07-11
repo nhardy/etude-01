@@ -1,0 +1,47 @@
+Data Variables:
+    x=0, y=0;
+    currentState="" #first line read in
+    direction[] #size 4
+    newState[] #size 4
+    step = "N"
+
+while i <= numOfMoves:
+    #update direction array as directions in currentState line
+    #update newState array to states in currentState line
+    move class
+    i++
+
+Move class:
+    if step == "N":
+        currentState = newState[1];
+        direction_to_coordinate(1);
+        step = direction[1];
+    else if step == "E":
+        currentState = newState[2];
+        direction_to_coordinate(2);
+        step = direction[2];
+    else if step == "S":
+        currentState = newState[3];
+        direction_to_coordinate(3);
+        step = direction[3];
+    else if step == "W":
+        currentState = newState[4];
+        direction_to_coordinate(4);
+        step = direction[4];
+
+direction_to_coordinate(int i):
+    if direction[i] == "N":
+        x += 0;
+        y += 1;
+    else if direction[i] == "E":
+        x += 1;
+        y += 0;
+    else if direction[i] == "S":
+        x += 0;
+        y += -1;
+    else if direction[i] == "W":
+        x += -1;
+        y += 0;
+
+return (input excluding comments)
+return "# " + x + " " + y

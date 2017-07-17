@@ -4,10 +4,12 @@ import re
 import sys
 
 """
-Etude 1
+Etude 1: Ants on a Plane
 Authors: Kimberley Louw, Nathan Hardy
+Simulation of creatures related to Langton's Ant.
 """
 
+# Mathematical convention of directional step to coordinate
 _DIRECTIONS = {
     'N': (0, 1),
     'S': (0, -1),
@@ -16,6 +18,7 @@ _DIRECTIONS = {
 }
 
 _DIRS = ['N', 'E', 'S', 'W']
+# Regular expressions
 _DNA_STRAND = re.compile(r'(\S) ([NSEW]{4}) (\S{4})', re.I)
 _IS_NUMERIC = re.compile(r'^\d+$')
 
@@ -47,7 +50,7 @@ class Strand:
     def out_state(self, in_state: str):
         return self._in_to_out_state[in_state]
 
-    def __str__(self):
+    def __str__(self): #TODO: line too long
         return '{} {} {}'.format(self.initial, ''.join(map(lambda d: self.out_direction(d), _DIRS)), ''.join(map(lambda d: self.out_state(d), _DIRS)))
 
 class Ant:
@@ -71,9 +74,10 @@ class Ant:
         # Get the appropriate direction from the strand based on the previous step
         direction = strand.out_direction(self._previous)
         dx, dy = _DIRECTIONS[direction]
+        # move ant
         self.x += dx
         self.y += dy
-        self._previous = direction
+        self._previous = direction # update previous directional step
 
 class Plane:
     def __init__(self, default: str):
@@ -118,13 +122,13 @@ def main():
 
     for unstripped_line in sys.stdin.readlines():
         line = unstripped_line.strip()
-        if line == '':
+        if line == '': # ignore blank lines
             continue
 
-        if line.startswith('#'):
+        if line.startswith('#'): # ignore comments
             continue
 
-        if _IS_NUMERIC.match(line):
+        if _IS_NUMERIC.match(line): # number of steps ending scenario
             steps = int(line)
             scenarios.append(Scenario(strands, steps))
             strands = []

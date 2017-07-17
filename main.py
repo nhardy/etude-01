@@ -41,7 +41,7 @@ class Strand:
     @classmethod
     def from_raw(cls, raw: str):
         match = _DNA_STRAND.match(raw)
-        initial, directions, states = match.group(1), match.group(2).upper(), match.group(3)
+        initial, directions, states = match.group(1), match.group(2).upper(), match.group(3) #TODO: line too long
         return cls(initial, directions, states)
 
     def out_direction(self, in_direction: str):
@@ -69,9 +69,9 @@ class Ant:
         state = self._plane.get_state(self.x, self.y)
         # Get relevant strand
         strand = self._strands[state]
-        # Set Plane state for Ant's current position to value determined by the strand
+        # Set Plane state for Ant's current position to value determined by the strand TODO: line too long
         self._plane.set_state(self.x, self.y, strand.out_state(self._previous))
-        # Get the appropriate direction from the strand based on the previous step
+        # Get the appropriate direction from the strand based on the previous step TODO: line too long
         direction = strand.out_direction(self._previous)
         dx, dy = _DIRECTIONS[direction]
         # move ant
@@ -90,7 +90,7 @@ class Plane:
         }
 
     def get_state(self, x: int, y: int) -> str:
-        return self.default if (x, y) not in self._cells else self._cells[(x, y)]
+        return self.default if (x, y) not in self._cells else self._cells[(x, y)] # TODO: line too long
 
     def set_state(self, x: int, y: int, state: str) -> str:
         self._cells[(x, y)] = state

@@ -16,11 +16,11 @@ _DIRECTIONS = {
 }
 
 _DIRS = ['N', 'E', 'S', 'W']
-_DNA_STRAND = re.compile(r'(\S) ([NSEW]{4}) (\S{4})')
+_DNA_STRAND = re.compile(r'(\S) ([NSEW]{4}) (\S{4})', re.I)
 _IS_NUMERIC = re.compile(r'^\d+$')
 
 class Strand:
-    def __init__(self, initial: str, directions: list, states: list):
+    def __init__(self, initial: str, directions: str, states: str):
         self.initial = initial
         self._in_to_out_direction = {
             'N': directions[0],
@@ -38,7 +38,7 @@ class Strand:
     @classmethod
     def from_raw(cls, raw: str):
         match = _DNA_STRAND.match(raw)
-        initial, directions, states = match.group(1), match.group(2), match.group(3)
+        initial, directions, states = match.group(1), match.group(2).upper(), match.group(3)
         return cls(initial, directions, states)
 
     def out_direction(self, in_direction: str):
@@ -54,35 +54,48 @@ class Ant:
     """
     Class for the ant
     """
-    def __init__(self, plane):
+    def __init__(self, plane, strands: list):
         self._plane = plane
+        self._strands = { strand.initial: strand for strand in strands }
         self.x = 0 # Ant x position
         self.y = 0 # Ant y position
         self._previous = 'N'
 
     def move(self):
-        # TODO: Moving should modify the grid where necessary
-        pass
+        # Get current state
+        state = self._plane.get_state(self.x, self.y)
+        # Get relevant strand
+        strand = self._strands[state]
+        # Set Plane state for Ant's current position to value determined by the strand
+        self._plane.set_state(self.x, self.y, strand.out_state(self._previous))
+        # Get the appropriate direction from the strand based on the previous step
+        direction = strand.out_direction(self._previous)
+        dx, dy = _DIRECTIONS[direction]
+        self.x += dx
+        self.y += dy
+        self._previous = direction
 
 class Plane:
     def __init__(self, default: str):
+        self.default = default
         # Initialise cells as a dictionary of coordinate tuples to states
         # This way, the plane can extend infinitely without having to worry
         # about allocating space in a list
         self._cells = {
-            (0, 0): default,
+            (0, 0): self.default,
         }
 
     def get_state(self, x: int, y: int) -> str:
-        return default if (x, y) not in self._cells else self._cells[(x, y)]
+        return self.default if (x, y) not in self._cells else self._cells[(x, y)]
 
     def set_state(self, x: int, y: int, state: str) -> str:
         self._cells[(x, y)] = state
 
 class Scenario:
     def __init__(self, strands: list, steps: int):
-        self.ant = Ant(Plane('w')) # TODO: Correct initial state
+        default_state = strands[0].initial
         self.strands = strands
+        self.ant = Ant(Plane(default_state), strands)
         self.steps = steps
 
         for _ in range(steps):
@@ -93,13 +106,14 @@ class Scenario:
 
     def __str__(self):
         return '\n'.join([
-            *self.strands,
+            *list(map(str, self.strands)),
             str(self.steps),
             self.result(),
         ])
 
 
 def main():
+    scenarios = []
     strands = []
 
     for unstripped_line in sys.stdin.readlines():
@@ -112,10 +126,12 @@ def main():
 
         if _IS_NUMERIC.match(line):
             steps = int(line)
-            print(Scenario(strands, steps))
+            scenarios.append(Scenario(strands, steps))
             strands = []
+        else:
+            strands.append(Strand.from_raw(line))
 
-        strands.append(Strand.from_raw(line))
+    print('\n\n'.join(map(str, scenarios)))
 
 if __name__ == '__main__':
     main()

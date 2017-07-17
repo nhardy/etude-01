@@ -1,0 +1,24 @@
+w ESWN bbbb
+b WNES wwww
+5
+
+. EEEE xxxx
+#hello testing comments
+y SewN x.!y
+x WEEE !!!!
+! nWeS .yx!
+#another comment
+4
+
+T WWWW bT23
+3 NESW bbbb
+b WWSS T322
+2 EENN 3333
+3
+
+. SWEN ?><$
+$ NESW ..<?
+? SSSS >>>>
+< NENE <<<<
+> SSWE $$??
+2

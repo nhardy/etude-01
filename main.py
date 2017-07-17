@@ -1,9 +1,54 @@
 #!/usr/bin/env python3
+
+import re
 import sys
 
 """
-Author(s): Kimberley Louw, Nathan Hardy
+Etude 1
+Authors: Kimberley Louw, Nathan Hardy
 """
+
+_DIRECTIONS = {
+    'N': (0, 1),
+    'S': (0, -1),
+    'E': (1, 0),
+    'W': (-1, 0),
+}
+
+_DIRS = ['N', 'E', 'S', 'W']
+_DNA_STRAND = re.compile(r'(\S) ([NSEW]{4}) (\S{4})')
+_IS_NUMERIC = re.compile(r'^\d+$')
+
+class Strand:
+    def __init__(self, initial: str, directions: list, states: list):
+        self.initial = initial
+        self._in_to_out_direction = {
+            'N': directions[0],
+            'E': directions[1],
+            'S': directions[2],
+            'W': directions[3],
+        }
+        self._in_to_out_state = {
+            'N': states[0],
+            'E': states[1],
+            'S': states[2],
+            'W': states[3],
+        }
+
+    @classmethod
+    def from_raw(cls, raw: str):
+        match = _DNA_STRAND.match(raw)
+        initial, directions, states = match.group(1), match.group(2), match.group(3)
+        return cls(initial, directions, states)
+
+    def out_direction(self, in_direction: str):
+        return self._in_to_out_direction[in_direction]
+
+    def out_state(self, in_state: str):
+        return self._in_to_out_state[in_state]
+
+    def __str__(self):
+        return '{} {} {}'.format(self.initial, ''.join(map(lambda d: self.out_direction(d), _DIRS)), ''.join(map(lambda d: self.out_state(d), _DIRS)))
 
 class Ant:
     """
@@ -13,8 +58,7 @@ class Ant:
         self._plane = plane
         self.x = 0 # Ant x position
         self.y = 0 # Ant y position
-        self._vx = 0 # Ant was moving neither left nor right on arrival
-        self._vy = 1 # Ant was moving in the positive-y direction on arrival
+        self._previous = 'N'
 
     def move(self):
         # TODO: Moving should modify the grid where necessary
@@ -56,12 +100,22 @@ class Scenario:
 
 
 def main():
-    lines = sys.stdin.readlines()
-    # Turn lines into scenarios
-    scenarios = [Scenario([], 0)] # TODO: Parse and produce a list of Scenarios
-    # Print Scenarios
-    for scenario in scenarios:
-        print(scenario)
+    strands = []
+
+    for unstripped_line in sys.stdin.readlines():
+        line = unstripped_line.strip()
+        if line == '':
+            continue
+
+        if line.startswith('#'):
+            continue
+
+        if _IS_NUMERIC.match(line):
+            steps = int(line)
+            print(Scenario(strands, steps))
+            strands = []
+
+        strands.append(Strand.from_raw(line))
 
 if __name__ == '__main__':
     main()

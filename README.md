@@ -1,4 +1,4 @@
-# Étude 03
+# Étude 01
 
 Python 3 solution for COSC326 Étude 01 - Ants on a Plane
 
